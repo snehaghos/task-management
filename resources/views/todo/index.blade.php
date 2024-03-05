@@ -32,7 +32,7 @@
                         @if ($todo->image)
                             <img src="{{ asset('storage/' . $todo->image) }}" alt="Todo Image" style="max-width: 100px;">
                         @else
-                            No Image
+                            No Image found
                         @endif
                     </td>
                     <td>
