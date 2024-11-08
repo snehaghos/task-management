@@ -16,6 +16,10 @@ return new class extends Migration
             $table->string('image');
             $table->string('name');
             $table->string('description');
+            $table->string('mimeType');
+            $table->string('path')->nullable();
+            $table->string('original_name')->nullable();
+            $table->string('extension')->nullable();
             $table->BigInteger('category')->nullable();
             $table->timestamps();
         });

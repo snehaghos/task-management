@@ -36,37 +36,44 @@ class GalleryController extends Controller
     }
 
 
-    public function show(Gallery $gallery)
+    public function show(Gallery $image)
     {
-        return new ImageResource($gallery);
+        return new ImageResource($image);
     }
     public function update(UpdateGalleryRequest $request, $id)
     {
-        $gallery=Gallery::find($id);
-        // dd($gallery);
-        $data = $request->validated();
-
-        if ($request->hasFile('image')) {
-            if ($gallery->image) {
-                Storage::disk('public')->delete($gallery->image);
-            }
-
-            $imagePath = $request->file('image')->store('gallery_images', 'public');
-            $data['image'] = $imagePath;
+        $gallery = Gallery::find($id);
+        if (!$gallery) {
+            return response()->json(['error' => 'Gallery not found'], 404);
         }
 
+        $data = $request->validated();
+        try {
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('gallery_images', 'public');
+                $oldImage = $gallery->image;
+                $data['image'] = $imagePath;
+                $gallery->update($data);
+                if ($oldImage) {
+                    Storage::disk('public')->delete($oldImage);
+                }
+            } else {
+                $gallery->update($data);
+            }
 
-        $gallery->update($data);
-        // dd($gallery);
-        return new ImageResource($gallery);
+            return new ImageResource($gallery);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Gallery $gallery)
+    public function destroy(Gallery $image)
     {
-        //
+        try {
+            $image->delete();
+            return response()->json(['message' => 'Gallery deleted successfully'], 204);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

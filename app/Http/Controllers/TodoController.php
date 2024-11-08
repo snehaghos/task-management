@@ -77,7 +77,6 @@ class TodoController extends Controller
         $todo->start_time = date('Y-m-d');
         $todo->end_time = date('Y-m-d');
         if ($request->hasFile('image')) {
-            // Delete old image if it exists
             if ($todo->image) {
                 Storage::disk('public')->delete($todo->image);
             }

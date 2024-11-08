@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Todo;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Todo\TodoResource;
-use App\Http\Resources\Todo\TodoCollection;
 use App\Http\Requests\Todo\StoreTodoRequest;
 use App\Http\Requests\Todo\UpdateTodoRequest;
+use App\Http\Resources\Todo\TodoCollection;
+use App\Http\Resources\Todo\TodoResource;
+use App\Models\Todo;
 use Illuminate\Support\Facades\Storage;
 
 class TodoController extends Controller
@@ -24,15 +23,15 @@ class TodoController extends Controller
     public function store(StoreTodoRequest $request)
     {
 
-        $data=$request->validated();
+        $data = $request->validated();
         // dd($data);
-         if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('todo_images','public');
-        $data['image'] = $imagePath;
-    }
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('todo_images', 'public');
+            $data['image'] = $imagePath;
+        }
         $data['start_time'] = date('Y-m-d H:i:s');
-        $data['end_time']= date('Y-m-d H:i:s');
-        $todo=Todo::create($data);
+        $data['end_time'] = date('Y-m-d H:i:s');
+        $todo = Todo::create($data);
         return new TodoResource($todo);
     }
 
@@ -44,7 +43,7 @@ class TodoController extends Controller
 
     public function update(UpdateTodoRequest $request, Todo $todo)
     {
-        $data=$request->validated();
+        $data = $request->validated();
         // dd( $todo->start_time==null?date('Y-m-d H:i:s'):$todo->start_time);
         if ($request->hasFile('image')) {
             if ($todo->image) {
@@ -54,8 +53,8 @@ class TodoController extends Controller
             $imagePath = $request->file('image')->store('todo_images', 'public');
             $data['image'] = $imagePath;
         }
-        $data['start_time'] = $todo->start_time==null?date('Y-m-d H:i:s'):$todo->start_time;
-        $data['end_time']= date('Y-m-d H:i:s');
+        $data['start_time'] = $todo->start_time == null ? date('Y-m-d H:i:s') : $todo->start_time;
+        $data['end_time'] = date('Y-m-d H:i:s');
 
         $todo->update($data);
         return new TodoResource($todo);
@@ -68,6 +67,6 @@ class TodoController extends Controller
     public function destroy(Todo $todo)
     {
         $todo->delete();
-        return  response(null, 204);
+        return response(null, 204);
     }
 }
